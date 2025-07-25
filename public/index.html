@@ -352,7 +352,8 @@
                 <div class="success-message" id="successMessage">
                     <i class="fas fa-check-circle fa-2x"></i>
                     <h3>Acesso liberado com sucesso!</h3>
-                    <p>Link da página de templates foi enviado para seu email.</p>                    
+                    <p>Os detalhes foram enviados para seu email.</p>
+                    <p><strong>Link de acesso:</strong> <a href="https://vamosautomatizar.com/templates.html" style="color: white; text-decoration: underline;">vamosautomatizar.com/templates.html</a></p>
                 </div>
                 <div class="privacy">
                     <p>Ao se cadastrar, você concorda com nossa <a href="https://vamosautomatizar.com/politica-privacidade.pdf" target="_blank">Política de Privacidade</a></p>
@@ -363,42 +364,44 @@
     <script>
         document.getElementById('leadForm').addEventListener('submit', function(e) {
             e.preventDefault();
+            
             // Obter valores do formulário
             const name = document.getElementById('name').value;
             const email = document.getElementById('email').value;
             const ddi = document.getElementById('ddi').value;
             const whatsapp = document.getElementById('whatsapp').value;
+            
             // Validação simples
             if (!name || !email || !whatsapp) {
                 showError('Por favor, preencha todos os campos corretamente.');
                 return;
             }
+            
             // Mostrar loading e desabilitar botão
             showLoading(true);
+            
             // Preparar dados para envio
             const formData = {
                 name: name,
                 email: email,
                 whatsapp: ddi + whatsapp
             };
-            // Enviar para endpoint seguro
-            sendToSecureEndpoint(formData);
-        });
-        function sendToSecureEndpoint(data) {
-            fetch('/api/leads', {
+            
+            // Enviar para endpoint
+            fetch('/submit-lead', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(data)
+                body: JSON.stringify(formData)
             })
             .then(response => {
-                if (response.ok) {
+                // Verificar se a resposta é JSON
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
                     return response.json();
                 } else {
-                    return response.json().then(err => {
-                        throw new Error(err.message || 'Erro no envio');
-                    });
+                    throw new Error('Resposta inválida do servidor');
                 }
             })
             .then(result => {
@@ -406,17 +409,18 @@
                     showSuccess();
                     document.getElementById('leadForm').reset();
                 } else {
-                    throw new Error(result.message || 'Erro desconhecido');
+                    throw new Error(result.message);
                 }
             })
             .catch(error => {
-                showError(error.message || 'Erro ao enviar dados. Tente novamente.');
                 console.error('Erro:', error);
+                showError('Erro ao enviar dados. Tente novamente.');
             })
             .finally(() => {
                 showLoading(false);
             });
-        }
+        });
+        
         function showLoading(show) {
             const submitBtn = document.getElementById('submitBtn');
             const loading = document.getElementById('loading');
@@ -428,6 +432,7 @@
                 loading.style.display = 'none';
             }
         }
+        
         function showError(message) {
             const errorElement = document.getElementById('errorMessage');
             errorElement.textContent = message;
@@ -436,12 +441,14 @@
                 errorElement.style.display = 'none';
             }, 5000);
         }
+        
         function showSuccess() {
             document.getElementById('successMessage').style.display = 'block';
             setTimeout(() => {
                 document.getElementById('successMessage').style.display = 'none';
             }, 10000);
         }
+        
         // Formatação do campo WhatsApp
         document.getElementById('whatsapp').addEventListener('input', function(e) {
             let value = e.target.value.replace(/\D/g, '');
