@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Templates n8n - Vamos Automatizar</title>
+    <link rel="icon" href="https://baserow-backend-production20240528124524339000000001.s3.amazonaws.com/user_files/hBOEgLSZO0BCnj5aPzvXxlGKplR6P8o8_4ffb285e13e5f27b2e3c3d0f74fa20830b7e8b9f01a29777975190f59ff1b826.png" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        :root {
+            --primary: #4b1f8b;
+            --primary-dark: #3a186d;
+            --secondary: #6a11cb;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #94a3b8;
+            --danger: #ef4444;
+            --success: #10b981;
+        }
+        body {
+            background: linear-gradient(135deg, #f5f3ff 0%, #e9d5ff 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            display: flex;
+            max-width: 1200px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(75, 31, 139, 0.25);
+        }
+        .left-panel {
+            flex: 1;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 60px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .logo img {
+            height: 50px;
+            width: auto;
+        }
+        .logo span {
+            display: flex;
+            align-items: center;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+        .features {
+            list-style: none;
+            margin: 30px 0;
+        }
+        .features li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 1rem;
+        }
+        .features i {
+            background: rgba(255, 255, 255, 0.2);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 16px;
+        }
+        .right-panel {
+            flex: 1;
+            padding: 60px 40px;
+        }
+        .form-header {
+            margin-bottom: 40px;
+            text-align: center;
+        }
+        .form-header h2 {
+            font-size: 2rem;
+            color: var(--dark);
+            margin-bottom: 10px;
+        }
+        .form-header p {
+            color: var(--gray);
+            font-size: 1rem;
+        }
+        .form-group {
+            margin-bottom: 25px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+        .input-group {
+            position: relative;
+        }
+        input, select {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(75, 31, 139, 0.1);
+        }
+        .phone-group {
+            display: flex;
+            gap: 15px;
+        }
+        .ddi-select {
+            flex: 0 0 120px;
+        }
+        .whatsapp-input {
+            flex: 1;
+        }
+        .submit-btn {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            padding: 18px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            box-shadow: 0 4px 6px rgba(75, 31, 139, 0.3);
+        }
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px rgba(75, 31, 139, 0.4);
+        }
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+        .submit-btn:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        .privacy {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 14px;
+            color: var(--gray);
+        }
+        .privacy a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        .success-message {
+            background: var(--success);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin-top: 20px;
+            display: none;
+        }
+        .error-message {
+            background: var(--danger);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            display: none;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid var(--primary);
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .templates-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 30px;
+        }
+        .template-item {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+        .template-item i {
+            font-size: 24px;
+            color: white;
+            margin-bottom: 10px;
+        }
+        .template-item div {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        @media (max-width: 900px) {
+            .container {
+                flex-direction: column;
+            }
+            .left-panel {
+                padding: 40px 30px;
+            }
+            .right-panel {
+                padding: 40px 30px;
+            }
+            .templates-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        @media (max-width: 480px) {
+            .phone-group {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .ddi-select {
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="left-panel">
+            <div class="logo">
+                <img src="https://baserow-backend-production20240528124524339000000001.s3.amazonaws.com/user_files/hBOEgLSZO0BCnj5aPzvXxlGKplR6P8o8_4ffb285e13e5f27b2e3c3d0f74fa20830b7e8b9f01a29777975190f59ff1b826.png" alt="Vamos Automatizar">
+                <span>Vamos Automatizar</span>
+            </div>
+            <h1>Templates n8n</h1>
+            <p class="subtitle">Automatize seus processos com nossa biblioteca completa de templates prontos para usar. Templates gratuitos e premium apresentados em nosso canal do YouTube.</p>
+            <ul class="features">
+                <li>
+                    <i class="fas fa-bolt"></i>
+                    <span>Implementação rápida em minutos</span>
+                </li>
+                <li>
+                    <i class="fas fa-cogs"></i>
+                    <span>Integrações com +100 plataformas</span>
+                </li>
+                <li>
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Segurança empresarial garantida</span>
+                </li>
+                <li>
+                    <i class="fas fa-sync-alt"></i>
+                    <span>Atualizações constantes</span>
+                </li>
+            </ul>
+        </div>
+        <div class="right-panel">
+            <div class="form-header">
+                <h2>Cadastre-se agora mesmo para acessar nossos templates</h2>
+                <p>Preencha seus dados para liberar acesso completo</p>
+            </div>
+            <form id="leadForm">
+                <div class="form-group">
+                    <label for="name">Nome completo</label>
+                    <div class="input-group">
+                        <input type="text" id="name" name="name" placeholder="Digite seu nome" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="email">E-mail profissional</label>
+                    <div class="input-group">
+                        <input type="email" id="email" name="email" placeholder="seu@empresa.com" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="phone">WhatsApp</label>
+                    <div class="phone-group">
+                        <div class="input-group ddi-select">
+                            <select id="ddi" name="ddi" required>
+                                <option value="+55">🇧🇷 +55 (Brasil)</option>
+                                <option value="+1">🇺🇸 +1 (EUA)</option>
+                                <option value="+44">🇬🇧 +44 (Reino Unido)</option>
+                                <option value="+33">🇫🇷 +33 (França)</option>
+                                <option value="+49">🇩🇪 +49 (Alemanha)</option>
+                                <option value="+39">🇮🇹 +39 (Itália)</option>
+                                <option value="+34">🇪🇸 +34 (Espanha)</option>
+                                <option value="+81">🇯🇵 +81 (Japão)</option>
+                                <option value="+86">🇨🇳 +86 (China)</option>
+                                <option value="+7">🇷🇺 +7 (Rússia)</option>
+                                <option value="+54">🇦🇷 +54 (Argentina)</option>
+                                <option value="+56">🇨🇱 +56 (Chile)</option>
+                                <option value="+57">🇨🇴 +57 (Colômbia)</option>
+                                <option value="+52">🇲🇽 +52 (México)</option>
+                            </select>
+                        </div>
+                        <div class="input-group whatsapp-input">
+                            <input type="tel" id="whatsapp" name="whatsapp" placeholder="(00) 00000-0000" required>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    <i class="fas fa-lock-open"></i> Liberar Acesso Agora
+                </button>
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>Liberando seu acesso...</p>
+                </div>
+                <div class="error-message" id="errorMessage">
+                    Por favor, preencha todos os campos corretamente.
+                </div>
+                <div class="success-message" id="successMessage">
+                    <i class="fas fa-check-circle fa-2x"></i>
+                    <h3>Acesso liberado com sucesso!</h3>
+                    <p>O link da página de templates foi enviado para seu email.</p>                    
+                </div>
+                <div class="privacy">
+                    <p>Ao se cadastrar, você concorda com nossa <a href="https://vamosautomatizar.com/politica-privacidade.pdf" target="_blank">Política de Privacidade</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script>
+        document.getElementById('leadForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // Obter valores do formulário
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const ddi = document.getElementById('ddi').value;
+            const whatsapp = document.getElementById('whatsapp').value;
+            // Validação simples
+            if (!name || !email || !whatsapp) {
+                showError('Por favor, preencha todos os campos corretamente.');
+                return;
+            }
+            // Mostrar loading e desabilitar botão
+            showLoading(true);
+            // Preparar dados para envio
+            const formData = {
+                name: name,
+                email: email,
+                whatsapp: ddi + whatsapp,
+                timestamp: new Date().toISOString(),
+                source: window.location.hostname,
+                template: 'n8n-templates'
+            };
+            // Enviar para endpoint seguro
+            sendToSecureEndpoint(formData);
+        });
+        function sendToSecureEndpoint(data) {
+            fetch('/api/leads', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    return response.json().then(err => {
+                        throw new Error(err.message || 'Erro no envio');
+                    });
+                }
+            })
+            .then(result => {
+                if (result.success) {
+                    showSuccess();
+                    document.getElementById('leadForm').reset();
+                } else {
+                    throw new Error(result.message || 'Erro desconhecido');
+                }
+            })
+            .catch(error => {
+                showError(error.message || 'Erro ao enviar dados. Tente novamente.');
+                console.error('Erro:', error);
+            })
+            .finally(() => {
+                showLoading(false);
+            });
+        }
+        function showLoading(show) {
+            const submitBtn = document.getElementById('submitBtn');
+            const loading = document.getElementById('loading');
+            if (show) {
+                submitBtn.disabled = true;
+                loading.style.display = 'block';
+            } else {
+                submitBtn.disabled = false;
+                loading.style.display = 'none';
+            }
+        }
+        function showError(message) {
+            const errorElement = document.getElementById('errorMessage');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+            setTimeout(() => {
+                errorElement.style.display = 'none';
+            }, 5000);
+        }
+        function showSuccess() {
+            document.getElementById('successMessage').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('successMessage').style.display = 'none';
+            }, 10000);
+        }
+        // Formatação do campo WhatsApp
+        document.getElementById('whatsapp').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 11) {
+                value = value.substring(0, 11);
+            }
+            let formattedValue = '';
+            if (value.length > 0) {
+                formattedValue = '(' + value.substring(0, 2);
+            }
+            if (value.length > 2) {
+                formattedValue += ') ' + value.substring(2, 7);
+            }
+            if (value.length > 7) {
+                formattedValue += '-' + value.substring(7, 11);
+            }
+            e.target.value = formattedValue;
+        });
+    </script>
+</body>
+</html>
