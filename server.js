@@ -6,6 +6,7 @@ const path = require('path');
 require('dotenv').config();
 
 const app = express();
+// Usar a porta fornecida pela Railway ou 3000 como fallback
 const PORT = process.env.PORT || 3000;
 
 // Middleware de segurança
@@ -142,7 +143,25 @@ app.use((req, res) => {
   });
 });
 
-app.listen(PORT, '0.0.0.0', () => {
+// Iniciar servidor com tratamento de erros
+const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`Servidor rodando na porta ${PORT}`);
   console.log(`Ambiente: ${process.env.NODE_ENV || 'development'}`);
+});
+
+// Tratamento gracioso de encerramento
+process.on('SIGTERM', () => {
+  console.log('Recebido SIGTERM. Encerrando servidor...');
+  server.close(() => {
+    console.log('Servidor encerrado.');
+    process.exit(0);
+  });
+});
+
+process.on('SIGINT', () => {
+  console.log('Recebido SIGINT. Encerrando servidor...');
+  server.close(() => {
+    console.log('Servidor encerrado.');
+    process.exit(0);
+  });
 });
