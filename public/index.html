@@ -1,25 +1,10 @@
-
-                        <!DOCTYPE html>
-                        <html lang="en">
-                        <head>
-                            <meta charset="UTF-8">
-                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-              <style>
-                body {
-                  background-color: white; /* Ensure the iframe has a white background */
-                }
-    
-                
-              </style>
-                        </head>
-                        <body>
-                            <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Templates n8n - Vamos Automatizar</title>
-    <link rel="icon" type="image/x-icon" href="https://baserow-backend-production20240528124524339000000001.s3.amazonaws.com/user_files/hBOEgLSZO0BCnj5aPzvXxlGKplR6P8o8_4ffb285e13e5f27b2e3c3d0f74fa20830b7e8b9f01a29777975190f59ff1b826.png">
+    <link rel="icon" href="https://baserow-backend-production20240528124524339000000001.s3.amazonaws.com/user_files/hBOEgLSZO0BCnj5aPzvXxlGKplR6P8o8_4ffb285e13e5f27b2e3c3d0f74fa20830b7e8b9f01a29777975190f59ff1b826.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -392,51 +377,13 @@
             }
             // Mostrar loading e desabilitar botão
             showLoading(true);
-            // Preparar dados para envio
-            const formData = {
-                name: name,
-                email: email,
-                whatsapp: ddi + whatsapp,
-                timestamp: new Date().toISOString(),
-                source: window.location.hostname,
-                template: 'n8n-templates'
-            };
-            // Enviar para endpoint seguro
-            sendToSecureEndpoint(formData);
-        });
-        function sendToSecureEndpoint(data) {
-            fetch('/api/leads', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data)
-            })
-            .then(response => {
-                if (response.ok) {
-                    return response.json();
-                } else {
-                    return response.json().then(err => {
-                        throw new Error(err.message || 'Erro no envio');
-                    });
-                }
-            })
-            .then(result => {
-                if (result.success) {
-                    showSuccess();
-                    document.getElementById('leadForm').reset();
-                } else {
-                    throw new Error(result.message || 'Erro desconhecido');
-                }
-            })
-            .catch(error => {
-                showError(error.message || 'Erro ao enviar dados. Tente novamente.');
-                console.error('Erro:', error);
-            })
-            .finally(() => {
+            // Simular envio e mostrar sucesso
+            setTimeout(() => {
+                showSuccess();
+                document.getElementById('leadForm').reset();
                 showLoading(false);
-            });
-        }
+            }, 2000);
+        });
         function showLoading(show) {
             const submitBtn = document.getElementById('submitBtn');
             const loading = document.getElementById('loading');
@@ -483,12 +430,3 @@
     </script>
 </body>
 </html>
-
-
-    
-              <script>
-                              
-              </script>
-                        </body>
-                        </html>
-                    
