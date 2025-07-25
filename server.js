@@ -6,7 +6,6 @@ const path = require('path');
 require('dotenv').config();
 
 const app = express();
-// Usar a porta fornecida pela Railway ou 3000 como fallback
 const PORT = process.env.PORT || 3000;
 
 // Middleware de segurança
@@ -23,7 +22,7 @@ const limiter = rateLimit({
 app.use('/api/', limiter);
 
 // Servir arquivos estáticos
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Rota principal - servir o HTML
 app.get('/', (req, res) => {
@@ -143,7 +142,7 @@ app.use((req, res) => {
   });
 });
 
-// Iniciar servidor com tratamento de erros
+// Iniciar servidor
 const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`Servidor rodando na porta ${PORT}`);
   console.log(`Ambiente: ${process.env.NODE_ENV || 'development'}`);
