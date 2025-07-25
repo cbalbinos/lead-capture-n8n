@@ -1,10 +1,25 @@
-<!DOCTYPE html>
+
+                        <!DOCTYPE html>
+                        <html lang="en">
+                        <head>
+                            <meta charset="UTF-8">
+                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <style>
+                body {
+                  background-color: white; /* Ensure the iframe has a white background */
+                }
+    
+                
+              </style>
+                        </head>
+                        <body>
+                            <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Templates n8n - Vamos Automatizar</title>
-    <link rel="icon" href="https://baserow-backend-production20240528124524339000000001.s3.amazonaws.com/user_files/hBOEgLSZO0BCnj5aPzvXxlGKplR6P8o8_4ffb285e13e5f27b2e3c3d0f74fa20830b7e8b9f01a29777975190f59ff1b826.png" type="image/png">
+    <link rel="icon" type="image/x-icon" href="https://baserow-backend-production20240528124524339000000001.s3.amazonaws.com/user_files/hBOEgLSZO0BCnj5aPzvXxlGKplR6P8o8_4ffb285e13e5f27b2e3c3d0f74fa20830b7e8b9f01a29777975190f59ff1b826.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -353,7 +368,8 @@
                 <div class="success-message" id="successMessage">
                     <i class="fas fa-check-circle fa-2x"></i>
                     <h3>Acesso liberado com sucesso!</h3>
-                    <p>O link da nossa página de tenplates foi enviado para seu email.</p>                    
+                    <p>Os detalhes foram enviados para seu email.</p>
+                    <p><strong>Link de acesso:</strong> <a href="https://vamosautomatizar.com/templates.html" style="color: white; text-decoration: underline;">vamosautomatizar.com/templates.html</a></p>
                 </div>
                 <div class="privacy">
                     <p>Ao se cadastrar, você concorda com nossa <a href="https://vamosautomatizar.com/politica-privacidade.pdf" target="_blank">Política de Privacidade</a></p>
@@ -385,13 +401,11 @@
                 source: window.location.hostname,
                 template: 'n8n-templates'
             };
-            // Enviar para endpoint seguro (você precisa configurar este endpoint)
+            // Enviar para endpoint seguro
             sendToSecureEndpoint(formData);
         });
         function sendToSecureEndpoint(data) {
-            // Endpoint seguro do seu próprio domínio (proxy)
-            const proxyEndpoint = '/api/leads'; // Este endpoint deve estar no seu servidor
-            fetch(proxyEndpoint, {
+            fetch('/api/leads', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -402,15 +416,21 @@
                 if (response.ok) {
                     return response.json();
                 } else {
-                    throw new Error('Erro no envio');
+                    return response.json().then(err => {
+                        throw new Error(err.message || 'Erro no envio');
+                    });
                 }
             })
             .then(result => {
-                showSuccess();
-                document.getElementById('leadForm').reset();
+                if (result.success) {
+                    showSuccess();
+                    document.getElementById('leadForm').reset();
+                } else {
+                    throw new Error(result.message || 'Erro desconhecido');
+                }
             })
             .catch(error => {
-                showError('Erro ao enviar dados. Tente novamente.');
+                showError(error.message || 'Erro ao enviar dados. Tente novamente.');
                 console.error('Erro:', error);
             })
             .finally(() => {
@@ -463,3 +483,12 @@
     </script>
 </body>
 </html>
+
+
+    
+              <script>
+                              
+              </script>
+                        </body>
+                        </html>
+                    
