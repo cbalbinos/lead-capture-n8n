@@ -352,8 +352,7 @@
                 <div class="success-message" id="successMessage">
                     <i class="fas fa-check-circle fa-2x"></i>
                     <h3>Acesso liberado com sucesso!</h3>
-                    <p>Os detalhes foram enviados para seu email.</p>
-                    <p><strong>Link de acesso:</strong> <a href="https://vamosautomatizar.com/templates.html" style="color: white; text-decoration: underline;">vamosautomatizar.com/templates.html</a></p>
+                    <p>O link da página de templates foi enviado para seu email.</p>                    
                 </div>
                 <div class="privacy">
                     <p>Ao se cadastrar, você concorda com nossa <a href="https://vamosautomatizar.com/politica-privacidade.pdf" target="_blank">Política de Privacidade</a></p>
@@ -376,13 +375,51 @@
             }
             // Mostrar loading e desabilitar botão
             showLoading(true);
-            // Simular envio e mostrar sucesso
-            setTimeout(() => {
-                showSuccess();
-                document.getElementById('leadForm').reset();
-                showLoading(false);
-            }, 2000);
+            // Preparar dados para envio
+            const formData = {
+                name: name,
+                email: email,
+                whatsapp: ddi + whatsapp,
+                timestamp: new Date().toISOString(),
+                source: window.location.hostname,
+                template: 'n8n-templates'
+            };
+            // Enviar para endpoint seguro
+            sendToSecureEndpoint(formData);
         });
+        function sendToSecureEndpoint(data) {
+            fetch('/api/leads', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    return response.json().then(err => {
+                        throw new Error(err.message || 'Erro no envio');
+                    });
+                }
+            })
+            .then(result => {
+                if (result.success) {
+                    showSuccess();
+                    document.getElementById('leadForm').reset();
+                } else {
+                    throw new Error(result.message || 'Erro desconhecido');
+                }
+            })
+            .catch(error => {
+                showError(error.message || 'Erro ao enviar dados. Tente novamente.');
+                console.error('Erro:', error);
+            })
+            .finally(() => {
+                showLoading(false);
+            });
+        }
         function showLoading(show) {
             const submitBtn = document.getElementById('submitBtn');
             const loading = document.getElementById('loading');
