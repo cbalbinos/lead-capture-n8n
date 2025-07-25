@@ -30,7 +30,7 @@ app.get('/', (req, res) => {
 // Rota para leads
 app.post('/api/leads', async (req, res) => {
   try {
-    const { name, email, whatsapp, timestamp, source, template } = req.body;
+    const { name, email, whatsapp } = req.body;
     
     if (!name || !email || !whatsapp) {
       return res.status(400).json({ 
@@ -44,14 +44,13 @@ app.post('/api/leads', async (req, res) => {
       name,
       email,
       whatsapp,
-      timestamp: timestamp || new Date().toISOString(),
-      source: source || req.get('origin') || 'unknown',
-      template: template || 'n8n-templates'
+      timestamp: new Date().toISOString(),
+      source: req.get('origin') || 'railway-app'
     };
     
-    console.log('Enviando dados para webhook:', webhookData);
+    console.log('Enviando dados para webhook:', JSON.stringify(webhookData, null, 2));
     
-    // Enviar para webhook real (se configurado)
+    // Enviar para webhook real
     if (process.env.WEBHOOK_URL) {
       try {
         const response = await fetch(process.env.WEBHOOK_URL.trim(), {
