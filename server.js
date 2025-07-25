@@ -30,22 +30,30 @@ app.get('/', (req, res) => {
 // Rota para leads
 app.post('/api/leads', async (req, res) => {
   try {
-    const { name, email, whatsapp } = req.body;
+    const { name, email, whatsapp, timestamp, source, template } = req.body;
     
     if (!name || !email || !whatsapp) {
-      return res.status(400).json({ error: 'Dados incompletos' });
+      return res.status(400).json({ 
+        error: 'Dados incompletos', 
+        message: 'Nome, email e WhatsApp são obrigatórios' 
+      });
     }
     
-    // Enviar para webhook
+    // Dados para enviar ao webhook
+    const webhookData = {
+      name,
+      email,
+      whatsapp,
+      timestamp: timestamp || new Date().toISOString(),
+      source: source || req.get('origin') || 'unknown',
+      template: template || 'n8n-templates'
+    };
+    
+    console.log('Enviando dados para webhook:', webhookData);
+    
+    // Enviar para webhook real (se configurado)
     if (process.env.WEBHOOK_URL) {
       try {
-        const webhookData = {
-          name,
-          email,
-          whatsapp,
-          timestamp: new Date().toISOString()
-        };
-        
         const response = await fetch(process.env.WEBHOOK_URL.trim(), {
           method: 'POST',
           headers: {
@@ -57,19 +65,41 @@ app.post('/api/leads', async (req, res) => {
           body: JSON.stringify(webhookData)
         });
         
-        console.log('Webhook response:', response.status);
+        console.log('Webhook response status:', response.status);
+        
+        if (response.ok) {
+          console.log('Dados enviados com sucesso para o webhook');
+        } else {
+          console.error('Erro no webhook:', await response.text());
+        }
       } catch (webhookError) {
-        console.error('Webhook error:', webhookError);
+        console.error('Erro ao conectar com webhook:', webhookError);
       }
     }
     
-    res.json({ success: true });
+    res.json({ 
+      success: true, 
+      message: 'Lead capturado com sucesso!' 
+    });
+    
   } catch (error) {
-    console.error('Error:', error);
-    res.status(500).json({ error: 'Erro interno' });
+    console.error('Erro no processamento:', error);
+    res.status(500).json({ 
+      error: 'Erro interno', 
+      message: 'Ocorreu um erro ao processar sua solicitação' 
+    });
   }
+});
+
+// Health check
+app.get('/health', (req, res) => {
+  res.json({ 
+    status: 'ok', 
+    timestamp: new Date().toISOString()
+  });
 });
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Servidor rodando na porta ${PORT}`);
+  console.log(`Ambiente: ${process.env.NODE_ENV || 'development'}`);
 });
