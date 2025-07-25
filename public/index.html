@@ -352,7 +352,8 @@
                 <div class="success-message" id="successMessage">
                     <i class="fas fa-check-circle fa-2x"></i>
                     <h3>Acesso liberado com sucesso!</h3>
-                    <p>O link da página de templates foi enviado para seu email.</p>                    
+                    <p>Os detalhes foram enviados para seu email.</p>
+                    <p><strong>Link de acesso:</strong> <a href="https://vamosautomatizar.com/templates.html" style="color: white; text-decoration: underline;">vamosautomatizar.com/templates.html</a></p>
                 </div>
                 <div class="privacy">
                     <p>Ao se cadastrar, você concorda com nossa <a href="https://vamosautomatizar.com/politica-privacidade.pdf" target="_blank">Política de Privacidade</a></p>
@@ -379,10 +380,7 @@
             const formData = {
                 name: name,
                 email: email,
-                whatsapp: ddi + whatsapp,
-                timestamp: new Date().toISOString(),
-                source: window.location.hostname,
-                template: 'n8n-templates'
+                whatsapp: ddi + whatsapp
             };
             // Enviar para endpoint seguro
             sendToSecureEndpoint(formData);
