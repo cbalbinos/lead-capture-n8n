@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Templates n8n - Vamos Automatizar</title>
-    <link rel="icon" href="https://baserow-backend-production20240528124524339000000001.s3.amazonaws.com/user_files/hBOEgLSZO0BCnj5aPzvXxlGKplR6P8o8_4ffb285e13e5f27b2e3c3d0f74fa20830b7e8b9f01a29777975190f59ff1b826.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -59,8 +58,7 @@
         }
         .logo img {
             height: 50px;
-            width: 50px;
-            object-fit: contain;
+            width: auto;
         }
         .logo span {
             display: flex;
@@ -272,7 +270,7 @@
     <div class="container">
         <div class="left-panel">
             <div class="logo">
-                <img src="https://baserow-backend-production20240528124524339000000001.s3.amazonaws.com/user_files/hBOEgLSZO0BCnj5aPzvXxlGKplR6P8o8_4ffb285e13e5f27b2e3c3d0f74fa20830b7e8b9f01a29777975190f59ff1b826.png" alt="Vamos Automatizar" onerror="this.style.display='none';">
+                <img src="https://baserow-backend-production20240528124524339000000001.s3.amazonaws.com/user_files/hBOEgLSZO0BCnj5aPzvXxlGKplR6P8o8_4ffb285e13e5f27b2e3c3d0f74fa20830b7e8b9f01a29777975190f59ff1b826.png" alt="Vamos Automatizar">
                 <span>Vamos Automatizar</span>
             </div>
             <h1>Templates n8n</h1>
@@ -377,13 +375,47 @@
             }
             // Mostrar loading e desabilitar botão
             showLoading(true);
-            // Simular envio e mostrar sucesso
-            setTimeout(() => {
+            // Preparar dados para envio
+            const formData = {
+                name: name,
+                email: email,
+                whatsapp: ddi + whatsapp,
+                timestamp: new Date().toISOString(),
+                source: window.location.hostname,
+                template: 'n8n-templates'
+            };
+            // Enviar para endpoint seguro (você precisa configurar este endpoint)
+            sendToSecureEndpoint(formData);
+        });
+        function sendToSecureEndpoint(data) {
+            // Endpoint seguro do seu próprio domínio (proxy)
+            const proxyEndpoint = '/api/leads'; // Este endpoint deve estar no seu servidor
+            fetch(proxyEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('Erro no envio');
+                }
+            })
+            .then(result => {
                 showSuccess();
                 document.getElementById('leadForm').reset();
+            })
+            .catch(error => {
+                showError('Erro ao enviar dados. Tente novamente.');
+                console.error('Erro:', error);
+            })
+            .finally(() => {
                 showLoading(false);
-            }, 2000);
-        });
+            });
+        }
         function showLoading(show) {
             const submitBtn = document.getElementById('submitBtn');
             const loading = document.getElementById('loading');
