@@ -352,7 +352,7 @@
                 <div class="success-message" id="successMessage">
                     <i class="fas fa-check-circle fa-2x"></i>
                     <h3>Acesso liberado com sucesso!</h3>
-                    <p>Link da página de temnplates n8n foi enviado para seu email.</p>
+                    <p>Link da página de templates n8n foi enviado para <strong id="userEmail"></strong>.</p>
                 </div>
                 <div class="privacy">
                     <p>Ao se cadastrar, você concorda com nossa <a href="https://vamosautomatizar.com/politica-privacidade.pdf" target="_blank">Política de Privacidade</a></p>
@@ -363,29 +363,24 @@
     <script>
         document.getElementById('leadForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            
             // Obter valores do formulário
             const name = document.getElementById('name').value;
             const email = document.getElementById('email').value;
             const ddi = document.getElementById('ddi').value;
             const whatsapp = document.getElementById('whatsapp').value;
-            
             // Validação simples
             if (!name || !email || !whatsapp) {
                 showError('Por favor, preencha todos os campos corretamente.');
                 return;
             }
-            
             // Mostrar loading e desabilitar botão
             showLoading(true);
-            
             // Preparar dados para envio
             const formData = {
                 name: name,
                 email: email,
                 whatsapp: ddi + whatsapp
             };
-            
             // Enviar para endpoint
             fetch('/submit-lead', {
                 method: 'POST',
@@ -405,7 +400,7 @@
             })
             .then(result => {
                 if (result.success) {
-                    showSuccess();
+                    showSuccess(email); // Passa o email para a função showSuccess
                     document.getElementById('leadForm').reset();
                 } else {
                     throw new Error(result.message);
@@ -419,7 +414,6 @@
                 showLoading(false);
             });
         });
-        
         function showLoading(show) {
             const submitBtn = document.getElementById('submitBtn');
             const loading = document.getElementById('loading');
@@ -431,7 +425,6 @@
                 loading.style.display = 'none';
             }
         }
-        
         function showError(message) {
             const errorElement = document.getElementById('errorMessage');
             errorElement.textContent = message;
@@ -440,14 +433,14 @@
                 errorElement.style.display = 'none';
             }, 5000);
         }
-        
-        function showSuccess() {
+        function showSuccess(email) {
+            // Atualiza o elemento com o email do usuário
+            document.getElementById('userEmail').textContent = email;
             document.getElementById('successMessage').style.display = 'block';
             setTimeout(() => {
                 document.getElementById('successMessage').style.display = 'none';
             }, 10000);
         }
-        
         // Formatação do campo WhatsApp
         document.getElementById('whatsapp').addEventListener('input', function(e) {
             let value = e.target.value.replace(/\D/g, '');
