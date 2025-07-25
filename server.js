@@ -1,14 +1,13 @@
-import express from 'express';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const express = require('express');
+const cors = require('cors');
+const path = require('path');
+require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware para parsear JSON
+// Middleware
+app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
@@ -18,7 +17,7 @@ app.get('/', (req, res) => {
 });
 
 // Rota para captura de leads
-app.post('/submit', async (req, res) => {
+app.post('/submit-lead', async (req, res) => {
   try {
     const { name, email, whatsapp } = req.body;
     
@@ -40,7 +39,6 @@ app.post('/submit', async (req, res) => {
     };
     
     console.log('Enviando para webhook:', process.env.WEBHOOK_URL);
-    console.log('Dados:', JSON.stringify(webhookData, null, 2));
     
     // Enviar para webhook
     if (process.env.WEBHOOK_URL) {
@@ -53,9 +51,15 @@ app.post('/submit', async (req, res) => {
           body: JSON.stringify(webhookData)
         });
         
-        console.log('Webhook response:', response.status);
+        console.log('Webhook response status:', response.status);
+        
+        if (response.ok) {
+          console.log('Dados enviados com sucesso para o webhook');
+        } else {
+          console.error('Erro no webhook:', await response.text());
+        }
       } catch (error) {
-        console.error('Erro no webhook:', error);
+        console.error('Erro ao conectar com webhook:', error);
       }
     }
     
@@ -71,6 +75,11 @@ app.post('/submit', async (req, res) => {
       message: 'Erro interno do servidor' 
     });
   }
+});
+
+// Health check
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
 app.listen(PORT, '0.0.0.0', () => {
