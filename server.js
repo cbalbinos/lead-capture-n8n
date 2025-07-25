@@ -8,73 +8,45 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware de segurança
+// Middleware
 app.use(helmet());
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
+app.use(express.static('public'));
 
-// Rate limiting para proteger contra abusos
+// Rate limiting
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 100, // limite de 100 requisições por IP
+  windowMs: 15 * 60 * 1000,
+  max: 100,
   message: 'Muitas requisições deste IP, tente novamente mais tarde.'
 });
 app.use('/api/', limiter);
 
-// Servir arquivos estáticos
-app.use(express.static(path.join(__dirname, 'public')));
-
-// Rota principal - servir o HTML
+// Rota principal
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Rota para captura de leads (segura)
+// Rota para leads
 app.post('/api/leads', async (req, res) => {
   try {
-    const { name, email, whatsapp, timestamp, source } = req.body;
+    const { name, email, whatsapp } = req.body;
     
-    // Validação básica
     if (!name || !email || !whatsapp) {
-      return res.status(400).json({ 
-        error: 'Dados incompletos', 
-        message: 'Nome, email e WhatsApp são obrigatórios' 
-      });
+      return res.status(400).json({ error: 'Dados incompletos' });
     }
     
-    // Validar formato de email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return res.status(400).json({ 
-        error: 'Email inválido', 
-        message: 'Por favor, informe um email válido' 
-      });
-    }
-    
-    // Validar WhatsApp (apenas números)
-    const cleanWhatsapp = whatsapp.replace(/\D/g, '');
-    if (cleanWhatsapp.length < 10) {
-      return res.status(400).json({ 
-        error: 'WhatsApp inválido', 
-        message: 'Número de WhatsApp incompleto' 
-      });
-    }
-    
-    // Dados para enviar ao webhook
-    const webhookData = {
-      name,
-      email,
-      whatsapp,
-      timestamp: timestamp || new Date().toISOString(),
-      source: source || req.get('origin') || 'unknown',
-      ip: req.ip,
-      userAgent: req.get('User-Agent')
-    };
-    
-    // Enviar para webhook real (se configurado)
+    // Enviar para webhook
     if (process.env.WEBHOOK_URL) {
       try {
-        const webhookResponse = await fetch(process.env.WEBHOOK_URL, {
+        const webhookData = {
+          name,
+          email,
+          whatsapp,
+          timestamp: new Date().toISOString()
+        };
+        
+        const response = await fetch(process.env.WEBHOOK_URL.trim(), {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -85,82 +57,19 @@ app.post('/api/leads', async (req, res) => {
           body: JSON.stringify(webhookData)
         });
         
-        if (!webhookResponse.ok) {
-          console.error('Webhook error:', await webhookResponse.text());
-        }
+        console.log('Webhook response:', response.status);
       } catch (webhookError) {
-        console.error('Webhook connection error:', webhookError);
-        // Não falhamos a requisição mesmo se o webhook falhar
+        console.error('Webhook error:', webhookError);
       }
     }
     
-    // Log para monitoramento (opcional)
-    console.log('Lead capturado:', {
-      name: webhookData.name,
-      email: webhookData.email.replace(/(.{2}).*(@.*)/, '$1***$2'), // Mascara email
-      timestamp: webhookData.timestamp
-    });
-    
-    // Resposta de sucesso
-    res.json({ 
-      success: true, 
-      message: 'Lead capturado com sucesso!' 
-    });
-    
+    res.json({ success: true });
   } catch (error) {
-    console.error('Erro no processamento:', error);
-    res.status(500).json({ 
-      error: 'Erro interno', 
-      message: 'Ocorreu um erro ao processar sua solicitação' 
-    });
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Erro interno' });
   }
 });
 
-// Rota de health check
-app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'ok', 
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime()
-  });
-});
-
-// Middleware para tratamento de erros
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ 
-    error: 'Erro interno do servidor',
-    message: 'Algo deu errado em nosso servidor' 
-  });
-});
-
-// Middleware para rotas não encontradas
-app.use((req, res) => {
-  res.status(404).json({ 
-    error: 'Rota não encontrada',
-    message: 'A rota solicitada não existe' 
-  });
-});
-
-// Iniciar servidor
-const server = app.listen(PORT, '0.0.0.0', () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Servidor rodando na porta ${PORT}`);
-  console.log(`Ambiente: ${process.env.NODE_ENV || 'development'}`);
-});
-
-// Tratamento gracioso de encerramento
-process.on('SIGTERM', () => {
-  console.log('Recebido SIGTERM. Encerrando servidor...');
-  server.close(() => {
-    console.log('Servidor encerrado.');
-    process.exit(0);
-  });
-});
-
-process.on('SIGINT', () => {
-  console.log('Recebido SIGINT. Encerrando servidor...');
-  server.close(() => {
-    console.log('Servidor encerrado.');
-    process.exit(0);
-  });
 });
